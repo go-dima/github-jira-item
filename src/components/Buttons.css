@@ -1,0 +1,95 @@
+/* $primary-color: darkblue;
+$background-color: #BADA55; */
+
+/* // Chrome applies an 8px margin by default (gross). */
+body {
+    width: 300px;
+    height: 260px;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: relative;
+  }
+
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+      monospace;
+  }
+
+.popupComponent {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  text-align: center;
+  padding: 4px;
+  background-color: whitesmoke;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+}
+
+.popupList-header {
+  min-height: 192px;
+  /* border: 1px solid black; */
+}
+
+.popupList{
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0px;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.popupList-item {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.popupList button {
+  width: 100%;
+  text-align: left;
+  border-color: gray;
+  display: flex;
+  flex-flow: row nowrap;
+
+  > .ant-btn-icon {
+    flex: 1 1 25px;
+    line-height: unset;
+  }
+
+  > span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.popupList-image {
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+}
+
+.popupList-footer {
+  display: block;
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
+  /* border: 1px solid blue; */
+}
+
+.popupList-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0;
+  padding: 10px;
+
+}

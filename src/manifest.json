@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Jira <--> Github Extension",
+  "description": "An extension to connect Jira item to Github PR",
+  "version": "0.0.1",
+  "action": {
+    "default_title": "Github Jira Item"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*", "<all_urls>"],
+      "js": ["js/contentScript.bundle.js"],
+      "css": ["contentStyles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "js/eventPage.bundle.js",
+    "matches": ["https://github.com/*", "https://*.atlassian.net"]
+  },
+  "icons": {
+    "16": "assets/logo.png",
+    "48": "assets/logo.png",
+    "128": "assets/logo.png"
+  },
+  "permissions": ["tabs", "activeTab", "alarms"],
+  "host_permissions": ["https://github.com/*", "<all_urls>"],
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

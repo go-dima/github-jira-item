@@ -17,8 +17,8 @@ const onInit = async () => {
   const [targetBranch, sourceBranch] = branchNames.filter(
     (item, index) => branchNames.indexOf(item) === index
   );
-  console.info("Meging", sourceBranch, "into", targetBranch);
   if (sourceBranch) {
+    console.info("Meging", sourceBranch, "into", targetBranch);
     addFooter(sourceBranch);
   }
 };
@@ -69,7 +69,7 @@ function createElement(): HTMLDivElement {
 chrome.runtime.onMessage.addListener(
   async (message: InitAction, sender, sendResponse) => {
     if (message.type === "INIT") {
-      await onInit();
+      await onInit().catch(console.error);
     }
   }
 );

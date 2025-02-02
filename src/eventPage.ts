@@ -23,17 +23,23 @@ async function loadJiraPage(jiraID: string) {
 }
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  if (changeInfo.status === "complete") {
-    await chrome.tabs
-      .sendMessage(tabId, { type: "INIT" } as InitAction)
-      .catch(/* Tab disconnected, ignore*/);
+  try {
+    if (changeInfo.status === "complete") {
+      await chrome.tabs.sendMessage(tabId, { type: "INIT" } as InitAction);
+    }
+  } catch (error) {
+    /* Tab disconnected, ignore*/
   }
 });
 
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
-  await chrome.tabs
-    .sendMessage(activeInfo.tabId, { type: "INIT" } as InitAction)
-    .catch(/* Tab disconnected, ignore*/);
+  try {
+    await chrome.tabs.sendMessage(activeInfo.tabId, {
+      type: "INIT",
+    } as InitAction);
+  } catch (error) {
+    /* Tab disconnected, ignore*/
+  }
 });
 
 chrome.runtime.onMessage.addListener(

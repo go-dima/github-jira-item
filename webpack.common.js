@@ -8,7 +8,6 @@ var { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 module.exports = {
   entry: {
-    // popup: path.join(__dirname, "src/popup/index.tsx"),
     eventPage: path.join(__dirname, "src/eventPage.ts"),
     contentScript: path.join(__dirname, "src/content.ts"),
     contentStyles: path.join(__dirname, "src/styles/content.css"),
@@ -68,12 +67,6 @@ module.exports = {
         },
       ],
     }),
-    // new HtmlWebpackPlugin({
-    //   template: path.join(__dirname, "src/popup/index.html"),
-    //   filename: "popup.html",
-    //   chunks: ["popup"],
-    //   cache: false,
-    // }),
     new MiniCssExtractPlugin({
       filename: "../[name].css",
     }),

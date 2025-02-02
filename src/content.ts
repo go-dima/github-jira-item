@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import Buttons from "./components/Buttons";
-import { Action } from "./shared.types";
+import JiraWidget from "./components/JiraWidget";
+import { InitAction } from "./shared.types";
 import "./styles/content.css";
 
 const onInit = async () => {
@@ -33,7 +33,7 @@ const addFooter = (branchName: string) => {
   const containerElement = document.getElementsByClassName("gh-header")[0];
 
   // Check if containerElement already conatins the newElement
-  const lookupNewElemnet = containerElement.querySelector(".popupList-buttons");
+  const lookupNewElemnet = containerElement.querySelector(".jira-widget");
   if (lookupNewElemnet || !anchorElement) {
     return;
   }
@@ -45,7 +45,7 @@ const addFooter = (branchName: string) => {
   const port = chrome.runtime.connect({ name: "github" });
   root.render(
     React.createElement<{ jiraID: string; port: chrome.runtime.Port }>(
-      Buttons,
+      JiraWidget,
       {
         jiraID,
         port,
@@ -58,7 +58,7 @@ const addFooter = (branchName: string) => {
 
 function createElement(): HTMLDivElement {
   const newElement = document.createElement("div");
-  newElement.className = "popupList-buttons";
+  newElement.className = "jira-widget";
   newElement.style.display = "flex";
   newElement.style.alignItems = "center";
   newElement.style.justifyContent = "space-around";
@@ -67,8 +67,8 @@ function createElement(): HTMLDivElement {
 }
 
 chrome.runtime.onMessage.addListener(
-  async (message: Action, sender, sendResponse) => {
-    if (message.name === "init") {
+  async (message: InitAction, sender, sendResponse) => {
+    if (message.type === "INIT") {
       await onInit();
     }
   }

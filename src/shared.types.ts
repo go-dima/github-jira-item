@@ -21,6 +21,20 @@ export interface JobWithMain extends Job {
   main: string;
 }
 
-export type Action = {
-  name: "init";
-};
+interface Action {
+  type: "INIT" | "FETCH_JIRA_ISSUE" | "LOAD_JIRA_PAGE";
+}
+
+export interface InitAction extends Action {
+  type: "INIT";
+}
+
+export interface LoadJiraPageAction extends Action {
+  type: "LOAD_JIRA_PAGE";
+  jiraID: string;
+}
+
+export interface JiraAction extends Action {
+  type: "FETCH_JIRA_ISSUE";
+  jiraId: string;
+}

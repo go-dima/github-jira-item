@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import Buttons from "./Buttons";
+import JiraWidget from "./JiraWidget";
 
 const meta = {
   title: "components/Buttons",
-  component: Buttons,
-} satisfies Meta<typeof Buttons>;
+  component: JiraWidget,
+} satisfies Meta<typeof JiraWidget>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

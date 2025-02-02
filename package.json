@@ -8,7 +8,8 @@
     "watch": "webpack -w --config webpack.dev.js",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "author": "Dima Gonikman",
   "license": "MIT",
@@ -23,6 +24,7 @@
     "@storybook/react": "^8.0.8",
     "@storybook/react-webpack5": "^8.0.8",
     "@storybook/test": "^8.0.8",
+    "@testing-library/react": "^16.2.0",
     "@types/chrome": "^0.0.202",
     "@types/jest": "^29.5.12",
     "@types/react": "^18.0.26",
@@ -32,6 +34,7 @@
     "css-loader": "^6.7.3",
     "html-webpack-plugin": "^5.5.0",
     "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "mini-css-extract-plugin": "^2.9.1",
     "prettier": "^2.8.3",
     "sass": "^1.57.1",
@@ -49,5 +52,6 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "storybook": "^8.0.8"
-  }
+  },
+  "packageManager": "pnpm@8.14.3+sha1.872b21adeaae4e71acd5c551ba848d927d6aa446"
 }

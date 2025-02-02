@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useJiraIssue } from "../hooks/useJiraIssue";
+import { LoadJiraPageAction } from "../shared.types";
 
 interface ButtonProps {
   src: string;
@@ -22,24 +24,37 @@ const Button: React.FC<ButtonProps> = ({ src, text, onClick, disabled }) => (
   </button>
 );
 
-export const Buttons: React.FC = ({
+export const JiraWidget: React.FC = ({
   jiraID,
   port,
 }: {
   jiraID: string;
   port: chrome.runtime.Port;
 }) => {
+  const { data, error, loading } = useJiraIssue(jiraID);
+  let textElemnet = <p></p>;
+  if (loading) {
+    textElemnet = <p>Loading...</p>;
+  }
+  if (error) {
+    textElemnet = <p>Error: {error.message}</p>;
+  }
+
   return (
-    <div className="jenkins-buttons-container">
+    <div className="jira-widget-container">
+      {data ? <p>Summary: {data.summary}</p> : textElemnet}
       <Button
-        src={"assets/logo.png"}
+        src={"assets/jira.png"}
         text={`Load ${jiraID}`}
         onClick={() => {
-          port.postMessage({ loadJiraPage: true, jiraID });
+          port.postMessage({
+            type: "LOAD_JIRA_PAGE",
+            jiraID,
+          } as LoadJiraPageAction);
         }}
       />
     </div>
   );
 };
 
-export default Buttons;
+export default JiraWidget;

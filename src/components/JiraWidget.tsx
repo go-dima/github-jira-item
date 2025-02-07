@@ -27,11 +27,13 @@ const Button: React.FC<ButtonProps> = ({ src, text, onClick, disabled }) => (
 export const JiraWidget: React.FC = ({
   jiraID,
   port,
+  mockData,
 }: {
   jiraID: string;
   port: chrome.runtime.Port;
+  mockData?: ReturnType<typeof useJiraIssue>;
 }) => {
-  const { data, error, loading } = useJiraIssue(jiraID);
+  const { data, error, loading } = mockData || useJiraIssue(jiraID);
   let textElemnet = <p></p>;
   if (loading) {
     textElemnet = <p>Loading...</p>;

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import JiraWidget from "./JiraWidget";
 
 const meta = {
-  title: "components/Buttons",
+  title: "components/JiraWidget",
   component: JiraWidget,
 } satisfies Meta<typeof JiraWidget>;
 
@@ -12,5 +12,15 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     jiraID: "JIRA-123",
+    port: {
+      postMessage: () => {},
+    },
+    mockData: {
+      data: {
+        summary: "Sample Issue",
+        isLoading: false,
+        error: null,
+      },
+    },
   },
 };

@@ -1,6 +1,8 @@
 import React from "react";
 import { useJiraIssue } from "../hooks/useJiraIssue";
 import { LoadJiraPageAction } from "../shared.types";
+import { JIRA_URL } from "../settings";
+import { LinkOutlined } from "@ant-design/icons";
 
 interface ButtonProps {
   src: string;
@@ -26,35 +28,29 @@ const Button: React.FC<ButtonProps> = ({ src, text, onClick, disabled }) => (
 
 export const JiraWidget: React.FC = ({
   jiraID,
-  port,
   mockData,
 }: {
   jiraID: string;
-  port: chrome.runtime.Port;
   mockData?: ReturnType<typeof useJiraIssue>;
 }) => {
   const { data, error, loading } = mockData || useJiraIssue(jiraID);
-  let textElemnet = <p></p>;
-  if (loading) {
-    textElemnet = <p>Loading...</p>;
-  }
-  if (error) {
-    textElemnet = <p>Error: {error.message}</p>;
-  }
+  const jiraBrowseUrl = `${JIRA_URL}/browse/${jiraID}`;
 
   return (
     <div className="jira-widget-container">
-      {data ? <p>Summary: {data.summary}</p> : textElemnet}
-      <Button
-        src={"assets/jira.png"}
-        text={`Load ${jiraID}`}
-        onClick={() => {
-          port.postMessage({
-            type: "LOAD_JIRA_PAGE",
-            jiraID,
-          } as LoadJiraPageAction);
-        }}
-      />
+      <a href={jiraBrowseUrl} target="_blank">
+        {jiraID}
+      </a>
+      {loading && "Loading..."}
+      {error && `Error: ${error.message}`}
+      {data && (
+        <div className="jira-widget-content">
+          <p style={{ margin: 0 }}>{data.summary}</p>
+          <a href={jiraBrowseUrl} target="_blank">
+            <LinkOutlined />
+          </a>
+        </div>
+      )}
     </div>
   );
 };

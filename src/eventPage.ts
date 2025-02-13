@@ -1,26 +1,5 @@
 import { fetchJiraIssue } from "./api/jiraApi";
-import { JIRA_URL } from "./settings";
-import { InitAction, JiraAction, LoadJiraPageAction } from "./shared.types";
-
-chrome.runtime.onConnect.addListener((port) => {
-  port.onMessage.addListener(async (msg: LoadJiraPageAction) => {
-    if (msg.type !== "LOAD_JIRA_PAGE") return;
-
-    try {
-      await loadJiraPage(msg.jiraID);
-    } catch (error) {
-      // Port disconnected
-      console.error("Error loading Jira page", error);
-    }
-    return true;
-  });
-});
-
-async function loadJiraPage(jiraID: string) {
-  chrome.tabs.create({
-    url: `${JIRA_URL}/browse/${jiraID}`,
-  });
-}
+import { InitAction, JiraAction } from "./shared.types";
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   try {

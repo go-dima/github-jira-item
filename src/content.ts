@@ -42,15 +42,10 @@ const addFooter = (branchName: string) => {
 
   // Render the React component
   const root = ReactDOM.createRoot(newElement);
-  const port = chrome.runtime.connect({ name: "github" });
   root.render(
-    React.createElement<{ jiraID: string; port: chrome.runtime.Port }>(
-      JiraWidget,
-      {
-        jiraID,
-        port,
-      }
-    )
+    React.createElement<{ jiraID: string }>(JiraWidget, {
+      jiraID,
+    })
   );
   // add root as first child of parentElement
   anchorElement.after(newElement);
@@ -61,8 +56,8 @@ function createElement(): HTMLDivElement {
   newElement.className = "jira-widget";
   newElement.style.display = "flex";
   newElement.style.alignItems = "center";
-  newElement.style.justifyContent = "space-around";
-  newElement.style.marginTop = "4px";
+  // newElement.style.justifyContent = "space-around";
+  // newElement.style.marginTop = "4px";
   return newElement;
 }
 

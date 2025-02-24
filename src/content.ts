@@ -47,8 +47,8 @@ const addFooter = (branchName: string) => {
       jiraID,
     })
   );
-  // add root as first child of parentElement
-  anchorElement.after(newElement);
+  // add root as first child of anchorElement
+  anchorElement.appendChild(newElement);
 };
 
 function createElement(): HTMLDivElement {

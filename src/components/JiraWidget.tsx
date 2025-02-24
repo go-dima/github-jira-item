@@ -1,8 +1,6 @@
 import React from "react";
 import { useJiraIssue } from "../hooks/useJiraIssue";
-import { LoadJiraPageAction } from "../shared.types";
 import { JIRA_URL } from "../settings";
-import { LinkOutlined } from "@ant-design/icons";
 
 interface ButtonProps {
   src: string;
@@ -38,17 +36,17 @@ export const JiraWidget: React.FC = ({
 
   return (
     <div className="jira-widget-container">
-      <a href={jiraBrowseUrl} target="_blank">
-        {jiraID}
-      </a>
       {loading && "Loading..."}
       {error && `Error: ${error.message}`}
       {data && (
         <div className="jira-widget-content">
-          <p style={{ margin: 0 }}>{data.summary}</p>
-          <a href={jiraBrowseUrl} target="_blank">
-            <LinkOutlined />
-          </a>
+          <p style={{ margin: 0 }}>
+            {data.summary} (
+            <a href={jiraBrowseUrl} target="_blank">
+              {jiraID}
+            </a>
+            )
+          </p>
         </div>
       )}
     </div>

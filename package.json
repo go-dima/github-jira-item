@@ -9,7 +9,8 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "local-pack": "./pack.sh"
   },
   "author": "Dima Gonikman",
   "license": "MIT",

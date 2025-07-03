@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Jira <--> Github Extension",
   "description": "An extension to connect Jira item to Github PR",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "action": {
     "default_title": "Github Jira Item"
   },

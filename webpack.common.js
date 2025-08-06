@@ -4,6 +4,8 @@ var webpack = require("webpack"),
   HtmlWebpackPlugin = require("html-webpack-plugin");
 MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
+require('dotenv').config();
+
 var { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 module.exports = {
@@ -43,6 +45,9 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin({ verbose: false }),
     new webpack.ProgressPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.JIRA_URL': JSON.stringify(process.env.JIRA_URL)
+    }),
     new CopyWebpackPlugin({
       patterns: [
         {

@@ -21,6 +21,7 @@ done
 # Check if organization parameter is provided
 if [ -z "$ORG_NAME" ]; then
     echo "Usage: $0 [--clone] <organization-name>"
+    echo "Example: $0 mycompany (creates JIRA_URL=https://mycompany.atlassian.net)"
     exit 1
 fi
 
@@ -33,8 +34,8 @@ fi
 # Install the dependencies
 npm install
 
-# Replace myorg in public/manifest.json
-sed -i '' "s/myorg/$ORG_NAME/g" src/settings.ts
+# Create .env file with organization URL
+echo "JIRA_URL=https://$ORG_NAME.atlassian.net" > .env
 
 # Build
 npm run build

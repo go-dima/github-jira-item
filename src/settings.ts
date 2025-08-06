@@ -1,1 +1,1 @@
-export const JIRA_URL = "https://myorg.atlassian.net";
+export const JIRA_URL = process.env.JIRA_URL;

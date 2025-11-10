@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import JiraWidget from "./components/JiraWidget";
+import { extractJiraId } from "./shared.helpers";
 import { InitAction } from "./shared.types";
 import "./styles/content.css";
 
@@ -74,7 +75,7 @@ const addFooter = (branchName: string) => {
     return;
   }
 
-  const jiraID = branchName.toUpperCase().match(/KOD-\d+/)?.[0];
+  const jiraID = extractJiraId(branchName);
   const { anchorElement, withMarginTop } = getAnchorElement();
   const containerElement = getContainerElement();
 

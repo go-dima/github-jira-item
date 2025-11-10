@@ -29,7 +29,7 @@ describe("parseRepoUrl", () => {
     );
     expect(parseRepoUrl(tabUrl)).toEqual({
       repoName: "my-repo",
-      branchName: "branch-name",
+      branchName: "branch-name/sub-folder",
       inPrPage: false,
     });
   });

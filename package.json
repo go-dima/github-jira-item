@@ -16,16 +16,11 @@
   "author": "Dima Gonikman",
   "license": "MIT",
   "devDependencies": {
-    "@chromatic-com/storybook": "^3.2.4",
-    "@storybook/addon-essentials": "^8.5.3",
-    "@storybook/addon-interactions": "^8.5.3",
-    "@storybook/addon-links": "^8.5.3",
-    "@storybook/addon-onboarding": "^8.5.3",
-    "@storybook/addon-webpack5-compiler-swc": "^2.0.0",
-    "@storybook/blocks": "^8.5.3",
-    "@storybook/react": "^8.5.3",
-    "@storybook/react-webpack5": "^8.5.3",
-    "@storybook/test": "^8.5.3",
+    "@chromatic-com/storybook": "^4.1.2",
+    "@storybook/addon-links": "^10.0.7",
+    "@storybook/addon-onboarding": "^10.0.7",
+    "@storybook/addon-webpack5-compiler-swc": "^4.0.2",
+    "@storybook/react-webpack5": "^10.0.7",
     "@testing-library/react": "^16.2.0",
     "@types/chrome": "^0.0.202",
     "@types/jest": "^29.5.12",
@@ -48,14 +43,15 @@
     "typescript": "^4.9.4",
     "webpack": "^5.75.0",
     "webpack-cli": "^4.10.0",
-    "webpack-merge": "^4.2.2"
+    "webpack-merge": "^4.2.2",
+    "@storybook/addon-docs": "^10.0.7"
   },
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
     "antd": "^5.16.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "storybook": "^8.5.3"
+    "storybook": "^10.0.7"
   },
   "packageManager": "pnpm@8.14.3+sha1.872b21adeaae4e71acd5c551ba848d927d6aa446"
 }

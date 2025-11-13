@@ -21,7 +21,7 @@ module.exports = {
   module: {
     rules: [
       {
-        exclude: /node_modules/,
+        exclude: [/node_modules/, /\.stories\.tsx?$/],
         test: /\.tsx?$/,
         use: "ts-loader",
       },

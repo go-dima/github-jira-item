@@ -40,8 +40,11 @@ export const JiraWidget: React.FC = ({
       {error && `Error: ${error.message}`}
       {data && (
         <div className="jira-widget-content">
-          <p style={{ margin: 0 }}>
-            {data.summary} (
+          <p className="jira-widget-text" title={data.summary}>
+            {data.summary}
+          </p>
+          <p className="jira-widget-link">
+            (
             <a href={jiraBrowseUrl} target="_blank">
               {jiraID}
             </a>

@@ -24,6 +24,20 @@ export const Default: Story = {
   },
 };
 
+export const LongStoryShort: Story = {
+  args: {
+    jiraID: "JIRA-456",
+    mockData: {
+      data: {
+        summary: "This is a long description and we want to see it trimmed",
+        status: "Open",
+      },
+      error: null,
+      loading: false,
+    },
+  },
+};
+
 export const Loading: Story = {
   args: {
     jiraID: "JIRA-123",

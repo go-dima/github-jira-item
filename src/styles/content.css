@@ -18,6 +18,19 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  max-width: 400px;
+  white-space: nowrap;
+}
+
+.jira-widget-text {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: end;
+}
+
+.jira-widget-link {
+  margin: 0;
 }
 
 .jenkins-button {

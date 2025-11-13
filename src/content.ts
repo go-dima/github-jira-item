@@ -21,7 +21,7 @@ const onInit = async () => {
   }
 
   const branchNames = branchElements.map(
-    (element: HTMLElement) => element.innerText
+    (element) => (element as HTMLElement).innerText
   );
 
   // Remove duplicates - return the first instance of each branch name
@@ -29,7 +29,6 @@ const onInit = async () => {
     (item, index) => branchNames.indexOf(item) === index
   );
   if (sourceBranch) {
-    console.info("Meging", sourceBranch, "into", targetBranch);
     addFooter(sourceBranch);
   }
 };
@@ -76,8 +75,16 @@ const addFooter = (branchName: string) => {
   }
 
   const jiraID = extractJiraId(branchName);
+  if (!jiraID) {
+    return;
+  }
+
   const { anchorElement, withMarginTop } = getAnchorElement();
   const containerElement = getContainerElement();
+
+  if (!containerElement) {
+    return;
+  }
 
   // Check if containerElement already conatins the newElement
   const lookupNewElemnet = containerElement.querySelector(".jira-widget");
@@ -90,7 +97,7 @@ const addFooter = (branchName: string) => {
   // Render the React component
   const root = ReactDOM.createRoot(newElement);
   root.render(
-    React.createElement<{ jiraID: string }>(JiraWidget, {
+    React.createElement(JiraWidget, {
       jiraID,
     })
   );
@@ -100,9 +107,7 @@ const addFooter = (branchName: string) => {
 
 function createElement(withMarginTop: boolean): HTMLDivElement {
   const newElement = document.createElement("div");
-  newElement.className = "jira-widget";
-  newElement.style.display = "flex";
-  newElement.style.alignItems = "center";
+  newElement.className = "jira-widget-container";
 
   if (withMarginTop) {
     newElement.style.marginTop = "4px";

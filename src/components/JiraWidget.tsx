@@ -2,40 +2,17 @@ import React from "react";
 import { useJiraIssue } from "../hooks/useJiraIssue";
 import { JIRA_URL } from "../settings";
 
-interface ButtonProps {
-  src: string;
-  text: string;
-  onClick: () => void;
-  disabled?: boolean;
-}
-
-const Button: React.FC<ButtonProps> = ({ src, text, onClick, disabled }) => (
-  <button
-    onClick={onClick}
-    className={`jenkins-button ${disabled ? "disabled" : ""}`}
-    disabled={disabled}>
-    <div className="jenkins-button-content">
-      <img
-        className="jenkins-button-img"
-        src={chrome.runtime ? chrome.runtime.getURL(src) : ""}
-      />
-      <span className="jenkins-button-text">{text}</span>
-    </div>
-  </button>
-);
-
-export const JiraWidget: React.FC = ({
-  jiraID,
-  mockData,
-}: {
+interface JiraWidgetProps {
   jiraID: string;
   mockData?: ReturnType<typeof useJiraIssue>;
-}) => {
+}
+
+export const JiraWidget: React.FC<JiraWidgetProps> = ({ jiraID, mockData }) => {
   const { data, error, loading } = mockData || useJiraIssue(jiraID);
   const jiraBrowseUrl = `${JIRA_URL}/browse/${jiraID}`;
 
   return (
-    <div className="jira-widget-container">
+    <>
       {loading && "Loading..."}
       {error && `Error: ${error.message}`}
       {data && (
@@ -52,7 +29,7 @@ export const JiraWidget: React.FC = ({
           </p>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

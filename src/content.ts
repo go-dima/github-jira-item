@@ -5,6 +5,8 @@ import { extractJiraId } from "./shared.helpers";
 import { InitAction } from "./shared.types";
 import "./styles/content.css";
 
+const containerElementClass = "jira-widget-container";
+
 const onInit = async () => {
   let branchElements = Array.from(
     document.querySelectorAll(
@@ -87,7 +89,9 @@ const addFooter = (branchName: string) => {
   }
 
   // Check if containerElement already conatins the newElement
-  const lookupNewElemnet = containerElement.querySelector(".jira-widget");
+  const lookupNewElemnet = containerElement.querySelector(
+    `.${containerElementClass}`
+  );
   if (lookupNewElemnet || !anchorElement) {
     return;
   }
@@ -107,7 +111,7 @@ const addFooter = (branchName: string) => {
 
 function createElement(withMarginTop: boolean): HTMLDivElement {
   const newElement = document.createElement("div");
-  newElement.className = "jira-widget-container";
+  newElement.className = containerElementClass;
 
   if (withMarginTop) {
     newElement.style.marginTop = "4px";

@@ -23,7 +23,11 @@
     "48": "assets/logo.png",
     "128": "assets/logo.png"
   },
-  "permissions": ["tabs", "activeTab", "alarms"],
+  "permissions": ["tabs", "activeTab", "alarms", "storage"],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
   "host_permissions": ["https://github.com/*", "<all_urls>"],
   "web_accessible_resources": [
     {

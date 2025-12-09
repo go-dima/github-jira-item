@@ -59,3 +59,13 @@ export const Error: Story = {
     },
   },
 };
+
+export const NoJiraUrl: Story = {
+  args: {
+    jiraID: "JIRA-123",
+    mockJiraUrl: {
+      jiraUrl: null,
+      loading: false,
+    },
+  },
+};

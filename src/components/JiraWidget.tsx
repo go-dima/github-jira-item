@@ -1,19 +1,38 @@
 import React from "react";
 import { useJiraIssue } from "../hooks/useJiraIssue";
-import { JIRA_URL } from "../settings";
+import { useJiraUrl } from "../hooks/useJiraUrl";
 
 interface JiraWidgetProps {
   jiraID: string;
   mockData?: ReturnType<typeof useJiraIssue>;
+  mockJiraUrl?: { jiraUrl: string | null; loading: boolean };
 }
 
-export const JiraWidget: React.FC<JiraWidgetProps> = ({ jiraID, mockData }) => {
-  const { data, error, loading } = mockData || useJiraIssue(jiraID);
-  const jiraBrowseUrl = `${JIRA_URL}/browse/${jiraID}`;
+export const JiraWidget: React.FC<JiraWidgetProps> = ({
+  jiraID,
+  mockData,
+  mockJiraUrl,
+}) => {
+  const {
+    data,
+    error,
+    loading: issueLoading,
+  } = mockData || useJiraIssue(jiraID);
+  const { jiraUrl, loading: urlLoading } = mockJiraUrl || useJiraUrl();
+
+  if (urlLoading) {
+    return <>Loading...</>;
+  }
+
+  if (!jiraUrl) {
+    return <>Jira url is not set in options</>;
+  }
+
+  const jiraBrowseUrl = `${jiraUrl}/browse/${jiraID}`;
 
   return (
     <>
-      {loading && "Loading..."}
+      {issueLoading && "Loading..."}
       {error && `Error: ${error.message}`}
       {data && (
         <div className="jira-widget-content">

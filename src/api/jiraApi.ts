@@ -1,4 +1,4 @@
-import { JIRA_URL } from "../settings";
+import { getJiraUrl } from "../settings";
 
 export interface JiraIssueData {
   summary: string;
@@ -8,8 +8,14 @@ export interface JiraIssueData {
 export const fetchJiraIssue = async (
   jiraId: string
 ): Promise<JiraIssueData> => {
+  const jiraUrl = await getJiraUrl();
+
+  if (!jiraUrl) {
+    throw new Error('Jira URL not configured. Please set it in extension options.');
+  }
+
   try {
-    const response = await fetch(`${JIRA_URL}/rest/api/3/issue/${jiraId}`);
+    const response = await fetch(`${jiraUrl}/rest/api/3/issue/${jiraId}`);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

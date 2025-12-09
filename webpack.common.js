@@ -13,6 +13,7 @@ module.exports = {
     eventPage: path.join(__dirname, "src/eventPage.ts"),
     contentScript: path.join(__dirname, "src/content.ts"),
     contentStyles: path.join(__dirname, "src/styles/content.css"),
+    options: path.join(__dirname, "src/options.tsx"),
   },
   output: {
     path: path.join(__dirname, "dist/js"),
@@ -68,6 +69,11 @@ module.exports = {
         {
           from: "assets",
           to: path.join(__dirname, "dist/assets"),
+          force: true,
+        },
+        {
+          from: "src/options.html",
+          to: path.join(__dirname, "dist"),
           force: true,
         },
       ],

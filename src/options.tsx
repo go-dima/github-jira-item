@@ -6,7 +6,7 @@ import { storageService } from "./storage/storageService";
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 root.render(
   <OptionsPage
-    onLoad={() => storageService.getJiraUrl()}
-    onSave={(url) => storageService.setJiraUrl(url)}
+    onLoad={() => storageService.getProviderUrl()}
+    onSave={(url) => storageService.setProviderUrl(url)}
   />
 );

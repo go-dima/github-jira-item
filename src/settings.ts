@@ -1,31 +1,28 @@
 import { storageService } from "./storage/storageService";
 
-// Build-time env var (takes priority for dev workflow)
-const ENV_JIRA_URL = process.env.JIRA_URL || "";
+const ENV_PROVIDER_URL = process.env.PROVIDER_URL || "";
 
-// Cache to avoid repeated storage reads
-let cachedJiraUrl: string | null = null;
+let cachedProviderUrl: string | null = null;
 
-export const getJiraUrl = async (): Promise<string> => {
-  // Env var takes priority (for dev workflow)
-  if (ENV_JIRA_URL) {
-    return ENV_JIRA_URL;
+export const getProviderUrl = async (): Promise<string> => {
+  if (ENV_PROVIDER_URL) {
+    return ENV_PROVIDER_URL;
   }
 
-  if (cachedJiraUrl !== null) {
-    return cachedJiraUrl;
+  if (cachedProviderUrl !== null) {
+    return cachedProviderUrl;
   }
 
   try {
-    const storedUrl = await storageService.getJiraUrl();
-    cachedJiraUrl = storedUrl;
-    return cachedJiraUrl;
+    const storedUrl = await storageService.getProviderUrl();
+    cachedProviderUrl = storedUrl;
+    return cachedProviderUrl;
   } catch (error) {
     console.warn("Failed to read from storage:", error);
     return "";
   }
 };
 
-export const clearJiraUrlCache = (): void => {
-  cachedJiraUrl = null;
+export const clearProviderUrlCache = (): void => {
+  cachedProviderUrl = null;
 };

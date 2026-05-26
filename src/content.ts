@@ -1,11 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import JiraWidget from "./components/JiraWidget";
-import { extractJiraId } from "./shared.helpers";
+import TicketWidget from "./components/TicketWidget";
+import { extractTicketId } from "./shared.helpers";
 import { InitAction } from "./shared.types";
 import "./styles/content.css";
 
-const containerElementClass = "jira-widget-container";
+const containerElementClass = "ticket-widget-container";
 
 const onInit = async () => {
   let branchElements = Array.from(
@@ -76,8 +76,8 @@ const addFooter = (branchName: string) => {
     return;
   }
 
-  const jiraID = extractJiraId(branchName);
-  if (!jiraID) {
+  const ticketId = extractTicketId(branchName);
+  if (!ticketId) {
     return;
   }
 
@@ -101,8 +101,8 @@ const addFooter = (branchName: string) => {
   // Render the React component
   const root = ReactDOM.createRoot(newElement);
   root.render(
-    React.createElement(JiraWidget, {
-      jiraID,
+    React.createElement(TicketWidget, {
+      ticketId,
     })
   );
   // add root as first child of anchorElement

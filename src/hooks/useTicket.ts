@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { JiraIssueData } from "../api/jiraApi";
+import { TicketData } from "../api/types";
 import { JiraAction } from "../shared.types";
 
-export const useJiraIssue = (jiraId: string) => {
-  const [data, setData] = useState<JiraIssueData | null>(null);
+export const useTicket = (ticketId: string) => {
+  const [data, setData] = useState<TicketData | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -13,7 +13,7 @@ export const useJiraIssue = (jiraId: string) => {
       try {
         const response = await chrome.runtime.sendMessage({
           type: "FETCH_JIRA_ISSUE",
-          jiraId,
+          ticketId,
         } as JiraAction);
 
         if (!response.success) {
@@ -28,10 +28,10 @@ export const useJiraIssue = (jiraId: string) => {
       }
     };
 
-    if (jiraId) {
+    if (ticketId) {
       fetchData();
     }
-  }, [jiraId]);
+  }, [ticketId]);
 
   return { data, error, loading };
 };

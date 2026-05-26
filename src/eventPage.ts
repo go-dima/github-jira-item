@@ -24,7 +24,7 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
 chrome.runtime.onMessage.addListener(
   (request: JiraAction, sender, sendResponse) => {
     if (request.type === "FETCH_JIRA_ISSUE") {
-      fetchJiraIssue(request.jiraId)
+      fetchJiraIssue(request.ticketId)
         .then((data) => sendResponse({ success: true, data }))
         .catch((error) =>
           sendResponse({ success: false, error: error.message })

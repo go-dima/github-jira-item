@@ -22,19 +22,14 @@ export interface JobWithMain extends Job {
 }
 
 interface Action {
-  type: "INIT" | "FETCH_JIRA_ISSUE" | "LOAD_JIRA_PAGE";
+  type: "INIT" | "FETCH_JIRA_ISSUE";
 }
 
 export interface InitAction extends Action {
   type: "INIT";
 }
 
-export interface LoadJiraPageAction extends Action {
-  type: "LOAD_JIRA_PAGE";
-  jiraID: string;
-}
-
 export interface JiraAction extends Action {
   type: "FETCH_JIRA_ISSUE";
-  jiraId: string;
+  ticketId: string;
 }

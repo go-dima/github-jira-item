@@ -1,4 +1,4 @@
-.jira-widget-container {
+.ticket-widget-container {
   display: flex;
   box-sizing: border-box;
   align-items: center;
@@ -14,7 +14,7 @@
   border-radius: 12px; */
 }
 
-.jira-widget-content {
+.ticket-widget-content {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -22,14 +22,14 @@
   white-space: nowrap;
 }
 
-.jira-widget-text {
+.ticket-widget-text {
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: end;
 }
 
-.jira-widget-link {
+.ticket-widget-link {
   margin: 0;
 }
 

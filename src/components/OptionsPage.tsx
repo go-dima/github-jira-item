@@ -12,7 +12,7 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({
   onSave,
   onLoad,
 }) => {
-  const [jiraUrl, setJiraUrl] = useState(initialUrl);
+  const [providerUrl, setProviderUrl] = useState(initialUrl);
   const [loading, setLoading] = useState(!!onLoad);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{
@@ -24,7 +24,7 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({
   useEffect(() => {
     if (onLoad) {
       onLoad()
-        .then(setJiraUrl)
+        .then(setProviderUrl)
         .catch((error) => console.error("Failed to load settings:", error))
         .finally(() => setLoading(false));
     }
@@ -52,13 +52,13 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setJiraUrl(value);
+    setProviderUrl(value);
     setValidationError(null);
     setStatus(null);
   };
 
   const handleSave = async () => {
-    const error = validateUrl(jiraUrl);
+    const error = validateUrl(providerUrl);
     if (error) {
       setValidationError(error);
       return;
@@ -68,11 +68,11 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({
     setStatus(null);
 
     try {
-      const normalizedUrl = jiraUrl.trim().replace(/\/+$/, "");
+      const normalizedUrl = providerUrl.trim().replace(/\/+$/, "");
       if (onSave) {
         await onSave(normalizedUrl);
       }
-      setJiraUrl(normalizedUrl);
+      setProviderUrl(normalizedUrl);
       setStatus({
         type: "success",
         message: "Settings saved! Refresh GitHub pages to apply.",
@@ -96,16 +96,16 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({
       <h1 className="options-title">GitHub-Jira Extension Settings</h1>
 
       <div className="options-form-group">
-        <label className="options-label" htmlFor="jiraUrl">
+        <label className="options-label" htmlFor="providerUrl">
           Jira URL
         </label>
         <input
           type="text"
-          id="jiraUrl"
+          id="providerUrl"
           className={`options-input ${
             validationError ? "options-input-error" : ""
           }`}
-          value={jiraUrl}
+          value={providerUrl}
           onChange={handleUrlChange}
           placeholder="https://your-domain.atlassian.net"
         />

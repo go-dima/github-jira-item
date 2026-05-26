@@ -1,17 +1,11 @@
-import { getProviderUrl } from "../settings";
 import { TicketData } from "./types";
 
 export const fetchJiraIssue = async (
-  ticketId: string
+  id: string,
+  baseUrl: string
 ): Promise<TicketData> => {
-  const jiraUrl = await getProviderUrl();
-
-  if (!jiraUrl) {
-    throw new Error('Provider URL not configured. Please set it in extension options.');
-  }
-
   try {
-    const response = await fetch(`${jiraUrl}/rest/api/3/issue/${ticketId}`);
+    const response = await fetch(`${baseUrl}/rest/api/3/issue/${id}`);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -21,8 +15,9 @@ export const fetchJiraIssue = async (
     const { summary, status } = result.fields;
 
     return {
-      summary: summary,
+      summary,
       status: status.name,
+      browseUrl: `${baseUrl}/browse/${id}`,
     };
   } catch (error) {
     console.error("Error fetching Jira data:", error);

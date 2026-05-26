@@ -1,18 +1,30 @@
 import React, { useEffect, useState } from "react";
+import { detectProvider, Provider } from "../shared.helpers";
 import "./OptionsPage.css";
 
 export interface OptionsPageProps {
   initialUrl?: string;
-  onSave?: (url: string) => Promise<void>;
-  onLoad?: () => Promise<string>;
+  initialApiKey?: string;
+  onSave?: (url: string, apiKey: string) => Promise<void>;
+  onLoad?: () => Promise<{ url: string; apiKey: string }>;
 }
+
+const PROVIDER_LABEL: Record<Provider, string> = {
+  jira: "Jira",
+  linear: "Linear",
+};
 
 export const OptionsPage: React.FC<OptionsPageProps> = ({
   initialUrl = "",
+  initialApiKey = "",
   onSave,
   onLoad,
 }) => {
   const [providerUrl, setProviderUrl] = useState(initialUrl);
+  const [apiKey, setApiKey] = useState(initialApiKey);
+  const [detected, setDetected] = useState<Provider | null>(
+    initialUrl ? detectProvider(initialUrl) : null
+  );
   const [loading, setLoading] = useState(!!onLoad);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<{
@@ -24,27 +36,44 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({
   useEffect(() => {
     if (onLoad) {
       onLoad()
-        .then(setProviderUrl)
+        .then(({ url, apiKey: storedKey }) => {
+          setProviderUrl(url);
+          setApiKey(storedKey);
+          setDetected(url ? detectProvider(url) : null);
+        })
         .catch((error) => console.error("Failed to load settings:", error))
         .finally(() => setLoading(false));
     }
   }, [onLoad]);
 
-  const validateUrl = (url: string): string | null => {
-    if (!url.trim()) {
-      return "Please enter your Jira URL";
+  const validate = (): string | null => {
+    if (!providerUrl.trim()) {
+      return "Please enter your issue tracker URL";
     }
 
+    let parsed: URL;
     try {
-      const parsed = new URL(url);
-      if (parsed.protocol !== "https:") {
-        return "URL must use HTTPS";
-      }
-      if (!parsed.hostname.includes("atlassian.net")) {
-        return "URL must be an Atlassian Cloud URL (*.atlassian.net)";
-      }
+      parsed = new URL(providerUrl);
     } catch {
       return "Please enter a valid URL";
+    }
+
+    if (parsed.protocol !== "https:") {
+      return "URL must use HTTPS";
+    }
+
+    const provider = detectProvider(providerUrl);
+    if (!provider) {
+      return "URL must be a Jira Cloud (*.atlassian.net) or Linear (linear.app) URL";
+    }
+
+    if (provider === "linear") {
+      if (!apiKey.trim()) {
+        return "Linear requires an API key";
+      }
+      if (!/^lin_api_/.test(apiKey.trim())) {
+        return "Linear API keys start with 'lin_api_'";
+      }
     }
 
     return null;
@@ -53,12 +82,19 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setProviderUrl(value);
+    setDetected(value ? detectProvider(value) : null);
+    setValidationError(null);
+    setStatus(null);
+  };
+
+  const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setApiKey(e.target.value);
     setValidationError(null);
     setStatus(null);
   };
 
   const handleSave = async () => {
-    const error = validateUrl(providerUrl);
+    const error = validate();
     if (error) {
       setValidationError(error);
       return;
@@ -69,10 +105,12 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({
 
     try {
       const normalizedUrl = providerUrl.trim().replace(/\/+$/, "");
+      const normalizedKey = apiKey.trim();
       if (onSave) {
-        await onSave(normalizedUrl);
+        await onSave(normalizedUrl, normalizedKey);
       }
       setProviderUrl(normalizedUrl);
+      setApiKey(normalizedKey);
       setStatus({
         type: "success",
         message: "Settings saved! Refresh GitHub pages to apply.",
@@ -91,13 +129,19 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({
     return <div className="options-container">Loading...</div>;
   }
 
+  const detectedLabel = detected
+    ? `Detected: ${PROVIDER_LABEL[detected]}`
+    : providerUrl
+    ? "Detected: Unrecognized URL"
+    : "";
+
   return (
     <div className="options-container">
-      <h1 className="options-title">GitHub-Jira Extension Settings</h1>
+      <h1 className="options-title">Issue Tracker &lt;&ndash;&gt; GitHub</h1>
 
       <div className="options-form-group">
         <label className="options-label" htmlFor="providerUrl">
-          Jira URL
+          Issue tracker URL
         </label>
         <input
           type="text"
@@ -107,15 +151,47 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({
           }`}
           value={providerUrl}
           onChange={handleUrlChange}
-          placeholder="https://your-domain.atlassian.net"
+          placeholder="https://your-domain.atlassian.net or https://linear.app/your-workspace"
         />
         <p className="options-help-text">
-          Your Atlassian Jira Cloud instance URL
+          Jira Cloud (https://*.atlassian.net) or Linear (https://linear.app/&lt;workspace&gt;)
         </p>
-        {validationError && (
-          <p className="options-error-message">{validationError}</p>
+        {detectedLabel && (
+          <p className="options-help-text">{detectedLabel}</p>
         )}
       </div>
+
+      {detected === "linear" && (
+        <div className="options-form-group">
+          <label className="options-label" htmlFor="providerApiKey">
+            Linear API key
+          </label>
+          <input
+            type="password"
+            id="providerApiKey"
+            className={`options-input ${
+              validationError ? "options-input-error" : ""
+            }`}
+            value={apiKey}
+            onChange={handleApiKeyChange}
+            placeholder="lin_api_..."
+          />
+          <p className="options-help-text">
+            Create at{" "}
+            <a
+              href="https://linear.app/settings/api"
+              target="_blank"
+              rel="noreferrer">
+              linear.app/settings/api
+            </a>
+            . Stored locally, not synced across browsers.
+          </p>
+        </div>
+      )}
+
+      {validationError && (
+        <p className="options-error-message">{validationError}</p>
+      )}
 
       <div className="options-button-group">
         <button

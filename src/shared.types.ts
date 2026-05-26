@@ -22,7 +22,7 @@ export interface JobWithMain extends Job {
 }
 
 interface Action {
-  type: "INIT" | "FETCH_JIRA_ISSUE";
+  type: "INIT" | "FETCH_JIRA_ISSUE" | "FETCH_LINEAR_ISSUE";
 }
 
 export interface InitAction extends Action {
@@ -33,3 +33,10 @@ export interface JiraAction extends Action {
   type: "FETCH_JIRA_ISSUE";
   ticketId: string;
 }
+
+export interface LinearAction extends Action {
+  type: "FETCH_LINEAR_ISSUE";
+  ticketId: string;
+}
+
+export type FetchTicketAction = JiraAction | LinearAction;

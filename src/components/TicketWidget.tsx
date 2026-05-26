@@ -29,8 +29,6 @@ export const TicketWidget: React.FC<TicketWidgetProps> = ({
     return <>Provider URL is not set in options</>;
   }
 
-  const browseUrl = `${providerUrl}/browse/${ticketId}`;
-
   return (
     <>
       {issueLoading && "Loading..."}
@@ -42,7 +40,9 @@ export const TicketWidget: React.FC<TicketWidgetProps> = ({
           </p>
           <p className="ticket-widget-link">
             (
-            <a href={browseUrl} target="_blank">
+            <a
+              href={data.browseUrl ?? `${providerUrl}/browse/${ticketId}`}
+              target="_blank">
               {ticketId}
             </a>
             )

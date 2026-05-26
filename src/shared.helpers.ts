@@ -42,3 +42,27 @@ export function extractTicketId(branchName: string): string | undefined {
 
   return match[0].replace("_", "-");
 }
+
+export type Provider = "jira" | "linear";
+
+/**
+ * Identifies the issue tracker behind a configured URL. Strict host matching
+ * (exact host or proper subdomain) — rejects spoofing like
+ * `atlassian.net.evil.com` or `linear.app.evil.com`.
+ */
+export function detectProvider(url: string): Provider | null {
+  let host: string;
+  try {
+    host = new URL(url).hostname.toLowerCase();
+  } catch {
+    return null;
+  }
+
+  if (host === "atlassian.net" || host.endsWith(".atlassian.net")) {
+    return "jira";
+  }
+  if (host === "linear.app" || host.endsWith(".linear.app")) {
+    return "linear";
+  }
+  return null;
+}

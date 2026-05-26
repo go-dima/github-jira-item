@@ -6,7 +6,13 @@ import { storageService } from "./storage/storageService";
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 root.render(
   <OptionsPage
-    onLoad={() => storageService.getProviderUrl()}
-    onSave={(url) => storageService.setProviderUrl(url)}
+    onLoad={async () => ({
+      url: await storageService.getProviderUrl(),
+      apiKey: await storageService.getProviderApiKey(),
+    })}
+    onSave={async (url, apiKey) => {
+      await storageService.setProviderUrl(url);
+      await storageService.setProviderApiKey(apiKey);
+    }}
   />
 );

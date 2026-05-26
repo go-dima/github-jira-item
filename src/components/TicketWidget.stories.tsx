@@ -68,3 +68,22 @@ export const NoProviderUrl: Story = {
     },
   },
 };
+
+export const LinearIssue: Story = {
+  args: {
+    ticketId: "ENG-123",
+    mockProviderUrl: {
+      providerUrl: "https://linear.app/acme",
+      loading: false,
+    },
+    mockData: {
+      data: {
+        summary: "Wire up Linear support in the GitHub extension",
+        status: "In Progress",
+        browseUrl: "https://linear.app/acme/issue/ENG-123/wire-up-linear-support",
+      },
+      error: null,
+      loading: false,
+    },
+  },
+};

@@ -26,17 +26,36 @@ type Story = StoryObj<typeof meta>;
 export const Empty: Story = {
   args: {
     initialUrl: "",
-    onSave: async (url: string) => {
-      console.log("Saved:", url);
+    onSave: async (url, apiKey) => {
+      console.log("Saved:", { url, apiKey });
     },
   },
 };
 
-export const WithExistingUrl: Story = {
+export const WithJiraUrl: Story = {
   args: {
     initialUrl: "https://mycompany.atlassian.net",
-    onSave: async (url: string) => {
-      console.log("Saved:", url);
+    onSave: async (url, apiKey) => {
+      console.log("Saved:", { url, apiKey });
+    },
+  },
+};
+
+export const WithLinearUrl: Story = {
+  args: {
+    initialUrl: "https://linear.app/acme",
+    initialApiKey: "lin_api_demo_token",
+    onSave: async (url, apiKey) => {
+      console.log("Saved:", { url, apiKey });
+    },
+  },
+};
+
+export const LinearMissingApiKey: Story = {
+  args: {
+    initialUrl: "https://linear.app/acme",
+    onSave: async (url, apiKey) => {
+      console.log("Saved:", { url, apiKey });
     },
   },
 };

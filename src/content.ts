@@ -10,9 +10,17 @@ const containerElementClass = "ticket-widget-container";
 const onInit = async () => {
   let branchElements = Array.from(
     document.querySelectorAll(
-      '[class*="PullRequestHeaderSummary-module__truncateBranch"]'
+      '[class*="PullRequestBranchName-module__branchName"]'
     )
   );
+
+  if (branchElements.length === 0) {
+    branchElements = Array.from(
+      document.querySelectorAll(
+        '[class*="PullRequestHeaderSummary-module__truncateBranch"]'
+      )
+    );
+  }
 
   if (branchElements.length === 0) {
     branchElements = Array.from(

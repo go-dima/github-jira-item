@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Chrome extension that connects issue tracker tickets (Jira Cloud or Linear) to GitHub pull requests. When viewing a GitHub PR, it automatically extracts the ticket ID from the branch name (e.g. `KOD-####`, `ENG-####`) and displays the ticket's summary and status directly on the GitHub page. The provider is inferred from the configured URL; only one provider is configured at a time.
+This is a Chrome extension that connects tickets (Jira Cloud or Linear) to GitHub pull requests. When viewing a GitHub PR, it automatically extracts the ticket ID from the branch name (e.g. `KOD-####`, `ENG-####`) and displays the ticket's summary and status directly on the GitHub page. The provider is inferred from the configured URL; only one provider is configured at a time.
 
 ## Development Commands
 

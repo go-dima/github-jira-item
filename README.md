@@ -1,4 +1,4 @@
-# Issue Tracker ↔ GitHub Chrome Extension
+# Tickets ↔ GitHub Chrome Extension
 
 Connects Jira Cloud or Linear tickets to GitHub PRs. The extension reads the
 ticket ID out of the PR's branch name (`KOD-1234`, `ENG-42`, etc.) and renders

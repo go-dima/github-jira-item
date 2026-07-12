@@ -103,3 +103,8 @@
   color: #cf222e;
   border: 1px solid #ff8182;
 }
+
+.options-validated-tick {
+  color: #1a7f37;
+  font-weight: 600;
+}

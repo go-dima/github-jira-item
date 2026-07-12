@@ -60,6 +60,16 @@ export const LinearMissingApiKey: Story = {
   },
 };
 
+export const LinearInvalidApiKey: Story = {
+  args: {
+    initialUrl: "https://linear.app/acme",
+    initialApiKey: "lin_api_wrong",
+    onSave: async () => {
+      throw new Error("Linear rejected the API key");
+    },
+  },
+};
+
 export const SaveError: Story = {
   args: {
     initialUrl: "https://mycompany.atlassian.net",

@@ -27,6 +27,7 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({
   );
   const [loading, setLoading] = useState(!!onLoad);
   const [saving, setSaving] = useState(false);
+  const [apiKeyValidated, setApiKeyValidated] = useState(false);
   const [status, setStatus] = useState<{
     type: "success" | "error";
     message: string;
@@ -48,7 +49,7 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({
 
   const validate = (): string | null => {
     if (!providerUrl.trim()) {
-      return "Please enter your issue tracker URL";
+      return "Please enter your tickets URL";
     }
 
     let parsed: URL;
@@ -85,12 +86,14 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({
     setDetected(value ? detectProvider(value) : null);
     setValidationError(null);
     setStatus(null);
+    setApiKeyValidated(false);
   };
 
   const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setApiKey(e.target.value);
     setValidationError(null);
     setStatus(null);
+    setApiKeyValidated(false);
   };
 
   const handleSave = async () => {
@@ -102,6 +105,7 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({
 
     setSaving(true);
     setStatus(null);
+    setApiKeyValidated(false);
 
     try {
       const normalizedUrl = providerUrl.trim().replace(/\/+$/, "");
@@ -111,15 +115,19 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({
       }
       setProviderUrl(normalizedUrl);
       setApiKey(normalizedKey);
+      if (detectProvider(normalizedUrl) === "linear") {
+        setApiKeyValidated(true);
+      }
       setStatus({
         type: "success",
         message: "Settings saved! Refresh GitHub pages to apply.",
       });
     } catch (error) {
-      setStatus({
-        type: "error",
-        message: "Failed to save settings. Please try again.",
-      });
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to save settings. Please try again.";
+      setStatus({ type: "error", message });
     } finally {
       setSaving(false);
     }
@@ -135,13 +143,19 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({
     ? "Detected: Unrecognized URL"
     : "";
 
+  const saveButtonLabel = saving
+    ? detected === "linear"
+      ? "Verifying..."
+      : "Saving..."
+    : "Save Settings";
+
   return (
     <div className="options-container">
-      <h1 className="options-title">Issue Tracker &lt;&ndash;&gt; GitHub</h1>
+      <h1 className="options-title">Tickets &lt;&ndash;&gt; GitHub</h1>
 
       <div className="options-form-group">
         <label className="options-label" htmlFor="providerUrl">
-          Issue tracker URL
+          Tickets URL
         </label>
         <input
           type="text"
@@ -165,6 +179,11 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({
         <div className="options-form-group">
           <label className="options-label" htmlFor="providerApiKey">
             Linear API key
+            {apiKeyValidated && (
+              <span className="options-validated-tick" aria-label="API key validated">
+                {" "}✓
+              </span>
+            )}
           </label>
           <input
             type="password"
@@ -198,7 +217,7 @@ export const OptionsPage: React.FC<OptionsPageProps> = ({
           className="options-button-primary"
           onClick={handleSave}
           disabled={saving}>
-          {saving ? "Saving..." : "Save Settings"}
+          {saveButtonLabel}
         </button>
       </div>
 

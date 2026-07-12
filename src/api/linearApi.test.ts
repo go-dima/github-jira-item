@@ -1,4 +1,4 @@
-import { fetchLinearIssue } from "./linearApi";
+import { fetchLinearIssue, verifyLinearApiKey } from "./linearApi";
 
 describe("fetchLinearIssue", () => {
   const originalFetch = global.fetch;
@@ -148,5 +148,72 @@ describe("fetchLinearIssue", () => {
 
     const body = JSON.parse(fetchMock.mock.calls[0][1].body);
     expect(body.variables).toEqual({ team: "ENGTEAM", number: 99999 });
+  });
+});
+
+describe("verifyLinearApiKey", () => {
+  const originalFetch = global.fetch;
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+    jest.clearAllMocks();
+  });
+
+  it("throws when API key is missing", async () => {
+    await expect(verifyLinearApiKey("")).rejects.toThrow(/required/i);
+  });
+
+  it("throws on 401/403", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 401,
+      json: jest.fn(),
+    }) as unknown as typeof fetch;
+
+    await expect(verifyLinearApiKey("lin_api_bad")).rejects.toThrow(/rejected/i);
+  });
+
+  it("throws when GraphQL errors come back", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: jest.fn().mockResolvedValue({
+        errors: [{ message: "Authentication required" }],
+      }),
+    }) as unknown as typeof fetch;
+
+    await expect(verifyLinearApiKey("lin_api_bad")).rejects.toThrow(
+      /authentication required/i
+    );
+  });
+
+  it("throws when fetch itself fails (network error)", async () => {
+    global.fetch = jest
+      .fn()
+      .mockRejectedValue(new Error("offline")) as unknown as typeof fetch;
+
+    await expect(verifyLinearApiKey("lin_api_xxx")).rejects.toThrow(
+      /could not reach linear/i
+    );
+  });
+
+  it("resolves when viewer.id comes back", async () => {
+    const fetchMock = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: jest
+        .fn()
+        .mockResolvedValue({ data: { viewer: { id: "user_1" } } }),
+    });
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    await expect(verifyLinearApiKey("lin_api_xxx")).resolves.toBeUndefined();
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.linear.app/graphql",
+      expect.objectContaining({
+        headers: expect.objectContaining({ Authorization: "lin_api_xxx" }),
+      })
+    );
   });
 });

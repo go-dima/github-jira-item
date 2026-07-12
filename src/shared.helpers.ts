@@ -46,7 +46,7 @@ export function extractTicketId(branchName: string): string | undefined {
 export type Provider = "jira" | "linear";
 
 /**
- * Identifies the issue tracker behind a configured URL. Strict host matching
+ * Identifies the ticket provider behind a configured URL. Strict host matching
  * (exact host or proper subdomain) — rejects spoofing like
  * `atlassian.net.evil.com` or `linear.app.evil.com`.
  */

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Tickets <--> Github Extension",
   "description": "An extension to connect Jira or Linear tickets to GitHub PRs",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "action": {
     "default_title": "Tickets <-> GitHub"
   },

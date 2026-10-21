@@ -11,50 +11,63 @@ import { InitAction } from "./shared.types";
 import "./styles/content.css";
 
 const containerElementClass = "ticket-widget-container";
+const PR_PATH = /\/pull\/\d+/;
 
-const onInit = async () => {
-  const branches = findPrBranches();
-  if (branches) {
-    addFooter(branches.sourceBranch);
+let mounted: {
+  root: ReactDOM.Root;
+  element: HTMLElement;
+  ticketId: string;
+} | null = null;
+
+const unmount = () => {
+  if (!mounted) {
+    return;
   }
+  mounted.root.unmount();
+  mounted.element.remove();
+  mounted = null;
 };
 
-const addFooter = (branchName: string) => {
-  if (!document) {
+// Idempotent: GitHub re-renders the PR header (hydration after a cached
+// reload, in-app navigation), which drops our node, so this runs on every
+// DOM change and re-inserts the widget when it is missing or stale.
+const ensureWidget = () => {
+  if (!PR_PATH.test(location.pathname)) {
+    unmount();
     return;
   }
 
-  const ticketId = extractTicketId(branchName);
+  const branches = findPrBranches();
+  const ticketId = branches && extractTicketId(branches.sourceBranch);
   if (!ticketId) {
+    unmount();
     return;
   }
+
+  if (mounted?.ticketId === ticketId && mounted.element.isConnected) {
+    return;
+  }
+  unmount();
 
   const anchor = findHeaderAnchor();
   const containerElement = findHeaderContainer();
-
-  if (!containerElement || !anchor) {
+  if (!anchor || !containerElement) {
     return;
   }
 
-  // Check if containerElement already conatins the newElement
-  const lookupNewElemnet = containerElement.querySelector(
-    `.${containerElementClass}`
-  );
-  if (lookupNewElemnet) {
-    return;
-  }
+  // Leftovers from a previous content script instance (extension reload)
+  containerElement
+    .querySelectorAll(`.${containerElementClass}`)
+    .forEach((element) => element.remove());
 
-  const newElement = createElement(anchor.withMarginTop);
+  const element = createElement(anchor.withMarginTop);
+  element.dataset.ticketId = ticketId;
 
-  // Render the React component
-  const root = ReactDOM.createRoot(newElement);
-  root.render(
-    React.createElement(TicketWidget, {
-      ticketId,
-    })
-  );
-  // add root as first child of anchorElement
-  anchor.anchorElement.appendChild(newElement);
+  const root = ReactDOM.createRoot(element);
+  root.render(React.createElement(TicketWidget, { ticketId }));
+  anchor.anchorElement.appendChild(element);
+
+  mounted = { root, element, ticketId };
 };
 
 function createElement(withMarginTop: boolean): HTMLDivElement {
@@ -67,10 +80,27 @@ function createElement(withMarginTop: boolean): HTMLDivElement {
   return newElement;
 }
 
-chrome.runtime.onMessage.addListener(
-  async (message: InitAction, sender, sendResponse) => {
-    if (message.type === "INIT") {
-      await onInit().catch(console.error);
-    }
+// Coalesce mutation bursts into at most one check per frame
+let scheduled = false;
+const scheduleEnsureWidget = () => {
+  if (scheduled) {
+    return;
   }
-);
+  scheduled = true;
+  requestAnimationFrame(() => {
+    scheduled = false;
+    ensureWidget();
+  });
+};
+
+new MutationObserver(scheduleEnsureWidget).observe(document.body, {
+  childList: true,
+  subtree: true,
+});
+ensureWidget();
+
+chrome.runtime.onMessage.addListener((message: InitAction) => {
+  if (message.type === "INIT") {
+    ensureWidget();
+  }
+});

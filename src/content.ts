@@ -1,6 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import TicketWidget from "./components/TicketWidget";
+import {
+  findHeaderAnchor,
+  findHeaderContainer,
+  findPrBranches,
+} from "./locators";
 import { extractTicketId } from "./shared.helpers";
 import { InitAction } from "./shared.types";
 import "./styles/content.css";
@@ -8,75 +13,10 @@ import "./styles/content.css";
 const containerElementClass = "ticket-widget-container";
 
 const onInit = async () => {
-  let branchElements = Array.from(
-    document.querySelectorAll(
-      '[class*="PullRequestBranchName-module__branchName"]'
-    )
-  );
-
-  if (branchElements.length === 0) {
-    branchElements = Array.from(
-      document.querySelectorAll(
-        '[class*="PullRequestHeaderSummary-module__truncateBranch"]'
-      )
-    );
+  const branches = findPrBranches();
+  if (branches) {
+    addFooter(branches.sourceBranch);
   }
-
-  if (branchElements.length === 0) {
-    branchElements = Array.from(
-      document.querySelectorAll(
-        "span.commit-ref > a > span.css-truncate-target"
-      )
-    );
-  }
-
-  const branchNames = branchElements.map(
-    (element) => (element as HTMLElement).innerText
-  );
-
-  // Remove duplicates - return the first instance of each branch name
-  const [targetBranch, sourceBranch] = branchNames.filter(
-    (item, index) => branchNames.indexOf(item) === index
-  );
-  if (sourceBranch) {
-    addFooter(sourceBranch);
-  }
-};
-
-const getAnchorElement = (): {
-  anchorElement: HTMLElement;
-  withMarginTop: boolean;
-} => {
-  const anchorClassName_v1 = "gh-header-meta";
-  const anchorClassName_v2 = "prc-PageHeader-Description";
-  let withMarginTop = true;
-
-  let anchorElement = Array.from(
-    document.querySelectorAll(`[class*="${anchorClassName_v2}"]`)
-  ).find((el) => el.className.includes(anchorClassName_v2))
-    ?.children[0] as HTMLElement;
-  if (!anchorElement) {
-    anchorElement = document.getElementsByClassName(
-      anchorClassName_v1
-    )[0] as HTMLElement;
-    withMarginTop = false;
-  }
-  return { anchorElement, withMarginTop };
-};
-
-const getContainerElement = (): Element | undefined => {
-  const containerClassName_v1 = "gh-header";
-  const containerClassName_v2 = "prc-PageHeader-PageHeader";
-
-  let containerElement = Array.from(
-    document.querySelectorAll(`[class*="${containerClassName_v2}"]`)
-  ).find((el) => el.className.includes(containerClassName_v2));
-  if (!containerElement) {
-    containerElement = document.getElementsByClassName(
-      containerClassName_v1
-    )[0];
-  }
-  return containerElement;
 };
 
 const addFooter = (branchName: string) => {
@@ -89,10 +29,10 @@ const addFooter = (branchName: string) => {
     return;
   }
 
-  const { anchorElement, withMarginTop } = getAnchorElement();
-  const containerElement = getContainerElement();
+  const anchor = findHeaderAnchor();
+  const containerElement = findHeaderContainer();
 
-  if (!containerElement) {
+  if (!containerElement || !anchor) {
     return;
   }
 
@@ -100,11 +40,11 @@ const addFooter = (branchName: string) => {
   const lookupNewElemnet = containerElement.querySelector(
     `.${containerElementClass}`
   );
-  if (lookupNewElemnet || !anchorElement) {
+  if (lookupNewElemnet) {
     return;
   }
 
-  const newElement = createElement(withMarginTop);
+  const newElement = createElement(anchor.withMarginTop);
 
   // Render the React component
   const root = ReactDOM.createRoot(newElement);
@@ -114,7 +54,7 @@ const addFooter = (branchName: string) => {
     })
   );
   // add root as first child of anchorElement
-  anchorElement.appendChild(newElement);
+  anchor.anchorElement.appendChild(newElement);
 };
 
 function createElement(withMarginTop: boolean): HTMLDivElement {

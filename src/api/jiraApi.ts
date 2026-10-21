@@ -1,21 +1,11 @@
-import { getJiraUrl } from "../settings";
-
-export interface JiraIssueData {
-  summary: string;
-  status: string;
-}
+import { TicketData } from "./types";
 
 export const fetchJiraIssue = async (
-  jiraId: string
-): Promise<JiraIssueData> => {
-  const jiraUrl = await getJiraUrl();
-
-  if (!jiraUrl) {
-    throw new Error('Jira URL not configured. Please set it in extension options.');
-  }
-
+  id: string,
+  baseUrl: string
+): Promise<TicketData> => {
   try {
-    const response = await fetch(`${jiraUrl}/rest/api/3/issue/${jiraId}`);
+    const response = await fetch(`${baseUrl}/rest/api/3/issue/${id}`);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -25,8 +15,9 @@ export const fetchJiraIssue = async (
     const { summary, status } = result.fields;
 
     return {
-      summary: summary,
+      summary,
       status: status.name,
+      browseUrl: `${baseUrl}/browse/${id}`,
     };
   } catch (error) {
     console.error("Error fetching Jira data:", error);

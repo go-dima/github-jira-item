@@ -1,112 +1,73 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import JiraWidget from "./components/JiraWidget";
-import { extractJiraId } from "./shared.helpers";
+import TicketWidget from "./components/TicketWidget";
+import {
+  findHeaderAnchor,
+  findHeaderContainer,
+  findPrBranches,
+} from "./locators";
+import { extractTicketId } from "./shared.helpers";
 import { InitAction } from "./shared.types";
 import "./styles/content.css";
 
-const containerElementClass = "jira-widget-container";
+const containerElementClass = "ticket-widget-container";
+const PR_PATH = /\/pull\/\d+/;
 
-const onInit = async () => {
-  let branchElements = Array.from(
-    document.querySelectorAll(
-      '[class*="PullRequestHeaderSummary-module__truncateBranch"]'
-    )
-  );
+let mounted: {
+  root: ReactDOM.Root;
+  element: HTMLElement;
+  ticketId: string;
+} | null = null;
 
-  if (branchElements.length === 0) {
-    branchElements = Array.from(
-      document.querySelectorAll(
-        "span.commit-ref > a > span.css-truncate-target"
-      )
-    );
+const unmount = () => {
+  if (!mounted) {
+    return;
   }
-
-  const branchNames = branchElements.map(
-    (element) => (element as HTMLElement).innerText
-  );
-
-  // Remove duplicates - return the first instance of each branch name
-  const [targetBranch, sourceBranch] = branchNames.filter(
-    (item, index) => branchNames.indexOf(item) === index
-  );
-  if (sourceBranch) {
-    addFooter(sourceBranch);
-  }
+  mounted.root.unmount();
+  mounted.element.remove();
+  mounted = null;
 };
 
-const getAnchorElement = (): {
-  anchorElement: HTMLElement;
-  withMarginTop: boolean;
-} => {
-  const anchorClassName_v1 = "gh-header-meta";
-  const anchorClassName_v2 = "prc-PageHeader-Description";
-  let withMarginTop = true;
-
-  let anchorElement = Array.from(
-    document.querySelectorAll(`[class*="${anchorClassName_v2}"]`)
-  ).find((el) => el.className.includes(anchorClassName_v2))
-    ?.children[0] as HTMLElement;
-  if (!anchorElement) {
-    anchorElement = document.getElementsByClassName(
-      anchorClassName_v1
-    )[0] as HTMLElement;
-    withMarginTop = false;
-  }
-  return { anchorElement, withMarginTop };
-};
-
-const getContainerElement = (): Element | undefined => {
-  const containerClassName_v1 = "gh-header";
-  const containerClassName_v2 = "prc-PageHeader-PageHeader";
-
-  let containerElement = Array.from(
-    document.querySelectorAll(`[class*="${containerClassName_v2}"]`)
-  ).find((el) => el.className.includes(containerClassName_v2));
-  if (!containerElement) {
-    containerElement = document.getElementsByClassName(
-      containerClassName_v1
-    )[0];
-  }
-  return containerElement;
-};
-
-const addFooter = (branchName: string) => {
-  if (!document) {
+// Idempotent: GitHub re-renders the PR header (hydration after a cached
+// reload, in-app navigation), which drops our node, so this runs on every
+// DOM change and re-inserts the widget when it is missing or stale.
+const ensureWidget = () => {
+  if (!PR_PATH.test(location.pathname)) {
+    unmount();
     return;
   }
 
-  const jiraID = extractJiraId(branchName);
-  if (!jiraID) {
+  const branches = findPrBranches();
+  const ticketId = branches && extractTicketId(branches.sourceBranch);
+  if (!ticketId) {
+    unmount();
     return;
   }
 
-  const { anchorElement, withMarginTop } = getAnchorElement();
-  const containerElement = getContainerElement();
+  if (mounted?.ticketId === ticketId && mounted.element.isConnected) {
+    return;
+  }
+  unmount();
 
-  if (!containerElement) {
+  const anchor = findHeaderAnchor();
+  const containerElement = findHeaderContainer();
+  if (!anchor || !containerElement) {
     return;
   }
 
-  // Check if containerElement already conatins the newElement
-  const lookupNewElemnet = containerElement.querySelector(
-    `.${containerElementClass}`
-  );
-  if (lookupNewElemnet || !anchorElement) {
-    return;
-  }
+  // Leftovers from a previous content script instance (extension reload)
+  containerElement
+    .querySelectorAll(`.${containerElementClass}`)
+    .forEach((element) => element.remove());
 
-  const newElement = createElement(withMarginTop);
+  const element = createElement(anchor.withMarginTop);
+  element.dataset.ticketId = ticketId;
 
-  // Render the React component
-  const root = ReactDOM.createRoot(newElement);
-  root.render(
-    React.createElement(JiraWidget, {
-      jiraID,
-    })
-  );
-  // add root as first child of anchorElement
-  anchorElement.appendChild(newElement);
+  const root = ReactDOM.createRoot(element);
+  root.render(React.createElement(TicketWidget, { ticketId }));
+  anchor.anchorElement.appendChild(element);
+
+  mounted = { root, element, ticketId };
 };
 
 function createElement(withMarginTop: boolean): HTMLDivElement {
@@ -119,10 +80,27 @@ function createElement(withMarginTop: boolean): HTMLDivElement {
   return newElement;
 }
 
-chrome.runtime.onMessage.addListener(
-  async (message: InitAction, sender, sendResponse) => {
-    if (message.type === "INIT") {
-      await onInit().catch(console.error);
-    }
+// Coalesce mutation bursts into at most one check per frame
+let scheduled = false;
+const scheduleEnsureWidget = () => {
+  if (scheduled) {
+    return;
   }
-);
+  scheduled = true;
+  requestAnimationFrame(() => {
+    scheduled = false;
+    ensureWidget();
+  });
+};
+
+new MutationObserver(scheduleEnsureWidget).observe(document.body, {
+  childList: true,
+  subtree: true,
+});
+ensureWidget();
+
+chrome.runtime.onMessage.addListener((message: InitAction) => {
+  if (message.type === "INIT") {
+    ensureWidget();
+  }
+});

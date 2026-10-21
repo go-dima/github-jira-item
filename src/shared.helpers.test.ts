@@ -1,6 +1,6 @@
-import { extractJiraId } from "./shared.helpers";
+import { extractTicketId } from "./shared.helpers";
 
-describe("extractJiraId", () => {
+describe("extractTicketId", () => {
   // Define ticket format variations [format, expectedOutput, description]
   const ticketFormats: Array<[string, string, string]> = [
     ["tes-123", "TES-123", "dash separator"],
@@ -10,6 +10,8 @@ describe("extractJiraId", () => {
     ["project-567", "PROJECT-567", "long prefix"],
     ["kod-123456789", "KOD-123456789", "very long number"],
     ["wrk-001", "WRK-001", "zero-padded number"],
+    ["eng-123", "ENG-123", "Linear-style identifier"],
+    ["eng_42", "ENG-42", "Linear-style underscore identifier"],
   ];
 
   // Define branch pattern templates [patternFunction, description]
@@ -35,16 +37,16 @@ describe("extractJiraId", () => {
   }
 
   it.each(testCases)("extracts '%s' as %s (%s)", (input, expected) => {
-    expect(extractJiraId(input)).toBe(expected);
+    expect(extractTicketId(input)).toBe(expected);
   });
 
   // Invalid input cases
   it.each([
-    ["no-ticket-here", "without Jira ID"],
+    ["no-ticket-here", "without ticket ID"],
     ["", "with empty string"],
     ["123-456", "with only numbers"],
     ["wrk-feature", "with letters and dash but no number"],
   ])("returns undefined for branch '%s' %s", (input) => {
-    expect(extractJiraId(input)).toBeUndefined();
+    expect(extractTicketId(input)).toBeUndefined();
   });
 });

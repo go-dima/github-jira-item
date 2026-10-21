@@ -1,18 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import JiraWidget from "./JiraWidget";
-import { message } from "antd";
+import TicketWidget from "./TicketWidget";
 
 const meta = {
-  title: "components/JiraWidget",
-  component: JiraWidget,
-} satisfies Meta<typeof JiraWidget>;
+  title: "components/TicketWidget",
+  component: TicketWidget,
+} satisfies Meta<typeof TicketWidget>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    jiraID: "JIRA-123",
+    ticketId: "KOD-123",
     mockData: {
       data: {
         summary: "Sample Issue",
@@ -26,7 +25,7 @@ export const Default: Story = {
 
 export const LongStoryShort: Story = {
   args: {
-    jiraID: "JIRA-456",
+    ticketId: "KOD-456",
     mockData: {
       data: {
         summary: "This is a long description and we want to see it trimmed",
@@ -40,7 +39,7 @@ export const LongStoryShort: Story = {
 
 export const Loading: Story = {
   args: {
-    jiraID: "JIRA-123",
+    ticketId: "KOD-123",
     mockData: {
       data: null,
       error: null,
@@ -51,7 +50,7 @@ export const Loading: Story = {
 
 export const Error: Story = {
   args: {
-    jiraID: "JIRA-123",
+    ticketId: "KOD-123",
     mockData: {
       data: null,
       error: { name: "Error", message: "Failed to fetch data" },
@@ -60,11 +59,30 @@ export const Error: Story = {
   },
 };
 
-export const NoJiraUrl: Story = {
+export const NoProviderUrl: Story = {
   args: {
-    jiraID: "JIRA-123",
-    mockJiraUrl: {
-      jiraUrl: null,
+    ticketId: "KOD-123",
+    mockProviderUrl: {
+      providerUrl: null,
+      loading: false,
+    },
+  },
+};
+
+export const LinearIssue: Story = {
+  args: {
+    ticketId: "ENG-123",
+    mockProviderUrl: {
+      providerUrl: "https://linear.app/acme",
+      loading: false,
+    },
+    mockData: {
+      data: {
+        summary: "Wire up Linear support in the GitHub extension",
+        status: "In Progress",
+        browseUrl: "https://linear.app/acme/issue/ENG-123/wire-up-linear-support",
+      },
+      error: null,
       loading: false,
     },
   },

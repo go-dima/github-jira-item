@@ -1,5 +1,8 @@
 import { fetchJiraIssue } from "./api/jiraApi";
-import { InitAction, JiraAction } from "./shared.types";
+import { fetchLinearIssue } from "./api/linearApi";
+import { getProviderUrl } from "./settings";
+import { storageService } from "./storage/storageService";
+import { FetchTicketAction, InitAction } from "./shared.types";
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   try {
@@ -21,15 +24,40 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
   }
 });
 
+const handleJira = async (ticketId: string) => {
+  const baseUrl = await getProviderUrl();
+  if (!baseUrl) {
+    throw new Error("Provider URL not configured. Please set it in extension options.");
+  }
+  return fetchJiraIssue(ticketId, baseUrl);
+};
+
+const handleLinear = async (ticketId: string) => {
+  const baseUrl = await getProviderUrl();
+  if (!baseUrl) {
+    throw new Error("Provider URL not configured. Please set it in extension options.");
+  }
+  const apiKey = await storageService.getProviderApiKey();
+  return fetchLinearIssue(ticketId, baseUrl, apiKey);
+};
+
 chrome.runtime.onMessage.addListener(
-  (request: JiraAction, sender, sendResponse) => {
+  (request: FetchTicketAction, sender, sendResponse) => {
     if (request.type === "FETCH_JIRA_ISSUE") {
-      fetchJiraIssue(request.jiraId)
+      handleJira(request.ticketId)
         .then((data) => sendResponse({ success: true, data }))
         .catch((error) =>
           sendResponse({ success: false, error: error.message })
         );
-      return true; // Important: indicates async response
+      return true;
+    }
+    if (request.type === "FETCH_LINEAR_ISSUE") {
+      handleLinear(request.ticketId)
+        .then((data) => sendResponse({ success: true, data }))
+        .catch((error) =>
+          sendResponse({ success: false, error: error.message })
+        );
+      return true;
     }
   }
 );

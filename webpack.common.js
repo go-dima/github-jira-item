@@ -47,7 +47,7 @@ module.exports = {
     new CleanWebpackPlugin({ verbose: false }),
     new webpack.ProgressPlugin(),
     new webpack.DefinePlugin({
-      'process.env.JIRA_URL': JSON.stringify(process.env.JIRA_URL)
+      'process.env.PROVIDER_URL': JSON.stringify(process.env.PROVIDER_URL)
     }),
     new CopyWebpackPlugin({
       patterns: [
